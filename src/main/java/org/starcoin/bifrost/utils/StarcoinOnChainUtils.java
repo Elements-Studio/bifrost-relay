@@ -89,9 +89,14 @@ public class StarcoinOnChainUtils {
             LOG.error("Get account sequence number error: " + accountAddress, e);
             throw new RuntimeException(e);
         }
+        if (m == null) {
+            String msg = "Get null account resource by address: " + accountAddress;
+            LOG.error(msg);
+            throw new RuntimeException(msg);
+        }
         List<Object> resourceItem = (List<Object>) ((List<Object>) m.get("value")).stream()
                 .filter(item -> item instanceof List && "sequence_number".equals(((List) item).get(0)))
-                .findFirst().orElseThrow(() -> new RuntimeException("Item 'sequence_number' NOT exists."));
+                .findFirst().orElseThrow(() -> new RuntimeException("Account resource item 'sequence_number' does NOT exist."));
         return new BigInteger(((Map<String, Object>) resourceItem.get(1)).get("U64").toString());
     }
 
