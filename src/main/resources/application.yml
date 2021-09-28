@@ -1,0 +1,145 @@
+server:
+  port: 8680
+  max-http-header-size: 102400
+  compression:
+    enabled: true
+    min-response-size: 20480  #20K 以上开启gzip
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${STARCOIN_MYSQL_URL}
+    username: ${STARCOIN_MYSQL_USER}
+    password: ${STARCOIN_MYSQL_PWD}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      # 不配置默认与maximum-pool-size相同
+      minimum-idle: 5 #minimum number of idle connections maintained by HikariCP in a connection pool
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 20
+      connection-test-query: SELECT 1
+      idle-timeout: 500000 #maximum idle time for connection
+      connection-timeout: 20000 #maximum number of milliseconds that a client will wait for a connection
+      max-lifetime: 1800000 # maximum lifetime in milliseconds of a connection in the pool after it is closed.
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        hbm2ddl:
+          # auto: create # 开发阶段使用
+          auto: update
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+
+
+  flyway:
+    baselineOnMigrate: true
+    # 如果指定 schema 包含了其他表但没有 flyway schema history 表的话，在执行 flyway migrate 命令之前须先执行 flyway baseline 命令。
+    # 设置 spring.flyway.baseline-on-migrate 为 true 后，flyway 将在需要 baseline 的时候, 自动执行一次 baseline。
+    baselineVersion: 0.0.0
+    cleanDisabled: true # flyway 的 clean 命令会删除指定 schema 下的所有 table，应该禁掉
+    enabled: false # 启用或禁用 flyway
+    locations: classpath:db/migration # 设定 SQL 脚本的目录，比如取值为 classpath:db/migration,filesystem:/sql-migrations
+    outOfOrder: false # 生产环境关闭 outOfOrder
+    #spring.flyway.encoding=
+    # Encoding of SQL migrations (default: UTF-8)
+    #spring.flyway.schemas=
+    # 需要 flyway 管控的 schema list，缺省的使用 dbsource.connection 直连上的那个 schema，
+    # 可以指定多个schema，但仅会在第一个 schema 下建立 metadata 表，也仅在第一个 schema 应用 migration sql 脚本，
+    # 但 flyway clean 命令会依次在这些 schema 下都执行一遍。
+
+starcoin:
+  seeds: ${STARCOIN_SEEDS}
+  network: ${STARCOIN_NETWORK}
+  json-rpc-url: ${STARCOIN_JSON_RPC_URL}
+  sender-private-key: ${STARCOIN_SENDER_PRIVATE_KEY}
+  sender-address: "0x569AB535990a17Ac9Afd1bc57Faec683"
+  sender-public-key: "0x122b7632cf4aab6f0fc3e462db3601ecd3234d9567c8deac2808f5cda26add36"
+  chain-id: 254
+  # ----------------------------------
+  event-filter:
+    from-address: "0x569AB535990a17Ac9Afd1bc57Faec683"
+    cross-chain-deposit-event-type-tag: "0x569AB535990a17Ac9Afd1bc57Faec683::Bifrost::CrossChainDepositEvent"
+  # ----------------------------------
+  # starcoin transaction
+  transaction-resend-task-service:
+    fixed-delay: 10000
+    resend-created-before-seconds: 5
+  transaction-confirm-task-service:
+    fixed-delay: 10000
+    confirm-Transaction-created-before-seconds: 5
+  # ----------------------------------
+  # from starcoin...
+  event-confirm-task-service:
+    fixed-delay: 5000
+    confirm-event-created-before-seconds: 5
+  to-ethereum:
+    create-transaction-for-event-confirmed-before-seconds: 5
+    transaction-create-fixed-delay: 5000
+
+ethereum:
+  # websocket-service-url: wss://mainnet.infura.io/ws/v3/72637bfa15a940dcadcec25a6fe0fca1
+  # ----------------------------------
+  # ropsten config:
+  websocket-service-url: wss://ropsten.infura.io/ws/v3/72637bfa15a940dcadcec25a6fe0fca1
+  http-service-url: https://ropsten.infura.io/v3/72637bfa15a940dcadcec25a6fe0fca1
+  chain-id: 3 # ropsten
+  mint-stc-contract-address: "0xF21aF28b798E40B1b8734655C3662B360367914e"
+  sender-address: "0x71DFDD2BF49E8Af5226E0078efA31ecf258bC44E"
+  sender-private-key: "0xc9f5f173242c5323493c0595dd73be4bda87ab2d90b8ed4b9c047352562ff3b0"
+  # ----------------------------------
+  # local ganache config:
+  # http-service-url: HTTP://127.0.0.1:7545
+  # chain-id: 1337
+  # mint-stc-contract-address: "0x3d8c97DF6A0948f11273b0367579B1f0413DE0C4"
+  # sender-address: "0x414d6e7B82E9Ce949d468d502057483195C69df9"
+  # sender-private-key: "bc4f359cd7a64bca074ffdeafcd18e3c2a860f22c64611577fcb5108fec850da"
+  # ----------------------------------
+  # ethereum transaction
+  transaction-resend-task-service:
+    fixed-delay: 10000
+    resend-created-before-seconds: 5
+  transaction-confirm-task-service:
+    fixed-delay: 10000
+    confirm-Transaction-created-before-seconds: 5
+  # ----------------------------------
+  # form ethereum...
+  withdraw-log-filter-address: "0xF21aF28b798E40B1b8734655C3662B360367914e"
+  log-confirm-task-service:
+    fixed-delay: 5000
+    confirm-log-created-before-seconds: 5
+  to-starcoin:
+    create-transaction-for-log-confirmed-before-seconds: 5
+    transaction-create-fixed-delay: 5000
+
+
+token-price-service:
+  get-wei-to-nano-stc-exchange-rate-url: http://localhost:8080/v1/exchangeRates/WEI_NANOSTC
+
+
+ok:
+  http:
+    connect-timeout: 3
+    max-idle-connections: 20
+    read-timeout: 6
+    write-timeout: 6
+    keep-alive-duration: 300
+
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+      starcoin:
+        bifrost: DEBUG
+      # 输出数据库模型（开发阶段）
+      hibernate:
+        tool:
+          hbm2ddl: DEBUG

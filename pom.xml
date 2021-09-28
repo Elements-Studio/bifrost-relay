@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.5.3</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>org.starcoin</groupId>
+	<artifactId>bifrost-relay</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>bifrost-relay</name>
+	<description>Cross chain project for Spring Boot</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter</artifactId>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.web3j</groupId>
+			<artifactId>core</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.3.1</version>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.flywaydb</groupId>-->
+<!--			<artifactId>flyway-core</artifactId>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>jsonrpc2-client</artifactId>
+			<version>1.16.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.starcoin</groupId>
+			<artifactId>sdk</artifactId>
+			<version>1.1.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+<!--			<plugin>-->
+<!--				<groupId>org.web3j</groupId>-->
+<!--				<artifactId>web3j-maven-plugin</artifactId>-->
+<!--				<version>4.8.2</version>-->
+<!--				<configuration>-->
+<!--					<packageName>org.starcoin.bifrost.ethereum.model</packageName>-->
+<!--					&lt;!&ndash;<sourceDestination>src/generated/java</sourceDestination>&ndash;&gt;-->
+<!--					<nativeJavaType>true</nativeJavaType>-->
+<!--&lt;!&ndash;					<outputFormat>java,bin</outputFormat>	&ndash;&gt;-->
+<!--					<outputFormat>java</outputFormat>-->
+<!--					<soliditySourceFiles>-->
+<!--						<directory>src/main/resources</directory>-->
+<!--						<includes>-->
+<!--&lt;!&ndash;							<include>**/*.sol</include>&ndash;&gt;-->
+<!--							<include>solidity/ESTC.sol</include>-->
+<!--						</includes>-->
+<!--					</soliditySourceFiles>-->
+<!--					<outputDirectory>-->
+<!--						<java>src/generated/java</java>-->
+<!--&lt;!&ndash;						<bin>src/generated/bin</bin>&ndash;&gt;-->
+<!--&lt;!&ndash;						<abi>src/generated/abi</abi>&ndash;&gt;-->
+<!--					</outputDirectory>-->
+<!--					<contract>-->
+<!--						&lt;!&ndash;						<includes>&ndash;&gt;-->
+<!--						&lt;!&ndash;							<include>greeter</include>&ndash;&gt;-->
+<!--						&lt;!&ndash;						</includes>&ndash;&gt;-->
+<!--						&lt;!&ndash;						<excludes>&ndash;&gt;-->
+<!--						&lt;!&ndash;							<exclude>mortal</exclude>&ndash;&gt;-->
+<!--						&lt;!&ndash;						</excludes>&ndash;&gt;-->
+<!--					</contract>-->
+<!--					<pathPrefixes>-->
+<!--						<pathPrefix>dep=../dependencies</pathPrefix>-->
+<!--					</pathPrefixes>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>generate-sources-web3j</id>-->
+<!--						<phase>generate-sources</phase>-->
+<!--						<goals>-->
+<!--							<goal>generate-sources</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${basedir}/src/generated/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

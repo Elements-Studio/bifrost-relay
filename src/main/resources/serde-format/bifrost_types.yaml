@@ -1,0 +1,15 @@
+---
+# import types from:
+# starcoin_types.yml
+# onchain_events.yml
+CrossChainDepositEvent:
+  STRUCT:
+    - token_code:
+        TYPENAME: TokenCode
+    - from:
+        TYPENAME: AccountAddress
+    - to: BYTES
+    - owner:
+        TYPENAME: AccountAddress
+    - value: U128
+    - to_chain: U8
