@@ -27,7 +27,7 @@ public class StarcoinAccountService {
     }
 
     @Transactional
-    public void resetSequenceNumber(String address, BigInteger txnCount) {
+    public void resetSequenceNumber(String address, BigInteger seqNumber) {
         StarcoinAccount starcoinAccount = starcoinAccountRepository.findById(address).orElse(null);
         if (starcoinAccount == null) {
             starcoinAccount = new StarcoinAccount();
@@ -35,8 +35,8 @@ public class StarcoinAccountService {
             starcoinAccount.setCreatedBy("ADMIN");
             starcoinAccount.setCreatedAt(System.currentTimeMillis());
         }
-        starcoinAccount.setConfirmedSequenceNumber(txnCount);
-        starcoinAccount.setSequenceNumber(txnCount.subtract(BigInteger.ONE));
+        starcoinAccount.setConfirmedSequenceNumber(seqNumber.subtract(BigInteger.ONE));
+        starcoinAccount.setSequenceNumber(seqNumber);
         starcoinAccount.setUpdatedBy("ADMIN");
         starcoinAccount.setUpdatedAt(System.currentTimeMillis());
         starcoinAccountRepository.save(starcoinAccount);

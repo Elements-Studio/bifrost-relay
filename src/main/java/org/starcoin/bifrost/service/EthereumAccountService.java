@@ -40,8 +40,8 @@ public class EthereumAccountService {
             ethereumAccount.setCreatedBy("ADMIN");
             ethereumAccount.setCreatedAt(System.currentTimeMillis());
         }
-        ethereumAccount.setConfirmedTransactionCount(txnCount);
-        ethereumAccount.setTransactionCount(txnCount.subtract(BigInteger.ONE));
+        ethereumAccount.setConfirmedTransactionCount(txnCount.subtract(BigInteger.ONE));
+        ethereumAccount.setTransactionCount(txnCount);
         ethereumAccount.setUpdatedBy("ADMIN");
         ethereumAccount.setUpdatedAt(System.currentTimeMillis());
         ethereumAccountRepository.save(ethereumAccount);
@@ -64,6 +64,7 @@ public class EthereumAccountService {
 
     /**
      * Get confirmed(on-chained) transaction count.
+     *
      * @param address account address
      */
     @Transactional

@@ -118,7 +118,8 @@ ethereum:
 
 
 token-price-service:
-  get-wei-to-nano-stc-exchange-rate-url: http://localhost:8080/v1/exchangeRates/WEI_NANOSTC
+  base-url: http://k8s-default-starcoin-cbf39ae390-308376289.ap-northeast-1.elb.amazonaws.com/barnard
+  get-wei-to-nano-stc-exchange-rate-url: ${token-price-service.base-url}/v1/exchangeRates/WEI_NANOSTC
 
 
 ok:

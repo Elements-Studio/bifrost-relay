@@ -70,7 +70,7 @@ class BifrostRelayApplicationTests {
     void testGetExchangeRate() {
         if (true) return;
         BigDecimal weiToNanoStcExRate = tokenPriceService.getWeiToNanoStcExchangeRate();
-        System.out.println(weiToNanoStcExRate);
+        System.out.println("weiToNanoStcExRate: " + weiToNanoStcExRate);
     }
     // //////////////////////////////////////////////
 
@@ -144,9 +144,7 @@ class BifrostRelayApplicationTests {
     void testRepositoryAddStarcoinEvents() throws IOException {
         //BigDecimal weiToNanoStc = ethereumTransactionService.getWeiToNanoStcExchangeRate();
         //System.out.println("Current WEI to NanoSTC exchange rate: " + weiToNanoStc);
-        if (true) {
-            return;
-        }
+        if (true) return;
         ethereumAccountService.resetByOnChainTransactionCount(ethereumTransactionOnChainService.getSenderAddress());
 
         StcToEthereum e = new StcToEthereum();
@@ -181,7 +179,7 @@ class BifrostRelayApplicationTests {
     @Order(3)
     void testMintStcTransactions() throws IOException {
         ethereumAccountService.resetByOnChainTransactionCount(ethereumTransactionOnChainService.getSenderAddress());
-        //if (true) {return;}
+        if (true) {return;}
         String senderAddress = ethereumTransactionOnChainService.getSenderAddress();
         BigInteger gasPrice = ethereumTransactionOnChainService.getOnChainGasPrice();
 
