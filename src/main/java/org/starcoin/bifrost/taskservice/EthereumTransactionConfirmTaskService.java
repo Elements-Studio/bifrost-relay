@@ -23,7 +23,8 @@ import java.util.List;
 public class EthereumTransactionConfirmTaskService {
     private static final Logger LOG = LoggerFactory.getLogger(EthereumTransactionConfirmTaskService.class);
 
-    private static final int NEEDED_BLOCK_CONFIRMATIONS = 1;
+    @Value("${ethereum.needed-block-confirmations}")
+    private Integer neededBlockConfirmations;
 
     @Value("${ethereum.transaction-confirm-task-service.confirm-Transaction-created-before-seconds}")
     private Long confirmTransactionCreatedBeforeSeconds;// = 5L;
@@ -65,7 +66,7 @@ public class EthereumTransactionConfirmTaskService {
                 continue;
             }
             BigInteger latestBlockNumber = ethLatestBlock.getBlock().getNumber();
-            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(NEEDED_BLOCK_CONFIRMATIONS))) < 0) {
+            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(neededBlockConfirmations))) < 0) {
                 LOG.debug("Transaction '" + t.getTransactionHash() + "' not confirmed yet.");
                 // ------------------------------------------
                 // Update transaction block info...

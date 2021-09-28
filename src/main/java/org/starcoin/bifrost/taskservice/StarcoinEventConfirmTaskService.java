@@ -32,7 +32,8 @@ import static org.starcoin.bifrost.utils.StarcoinOnChainUtils.getLatestBlockNumb
 public class StarcoinEventConfirmTaskService {
     private static final Logger LOG = LoggerFactory.getLogger(StarcoinEventConfirmTaskService.class);
 
-    private static final int NEEDED_BLOCK_CONFIRMATIONS = 1;
+    @Value("${starcoin.needed-block-confirmations}")
+    private Integer neededBlockConfirmations;
 
     private final String jsonRpcUrl;
 
@@ -88,7 +89,7 @@ public class StarcoinEventConfirmTaskService {
                 LOG.error("Get latest block info error. " + runtimeException);
                 continue;
             }
-            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(NEEDED_BLOCK_CONFIRMATIONS))) < 0) {
+            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(neededBlockConfirmations))) < 0) {
                 LOG.debug("Transaction '" + e.getTransactionHash() + "' not confirmed yet.");
                 // ------------------------------------------
                 continue;

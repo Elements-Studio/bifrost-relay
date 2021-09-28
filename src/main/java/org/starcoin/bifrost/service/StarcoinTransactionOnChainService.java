@@ -14,14 +14,13 @@ import org.springframework.stereotype.Service;
 import org.starcoin.bean.TypeObj;
 import org.starcoin.bifrost.DomainError;
 import org.starcoin.bifrost.data.model.StarcoinDepositStc;
-import org.starcoin.bifrost.utils.HexUtils;
 import org.starcoin.bifrost.rpc.JsonRpcClient;
+import org.starcoin.bifrost.utils.HexUtils;
 import org.starcoin.bifrost.utils.StarcoinAccountAddressUtils;
 import org.starcoin.bifrost.utils.StarcoinOnChainUtils;
 import org.starcoin.types.*;
 import org.starcoin.utils.AccountAddressUtils;
 import org.starcoin.utils.SignatureUtils;
-import org.starcoin.bifrost.utils.HexUtils;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;

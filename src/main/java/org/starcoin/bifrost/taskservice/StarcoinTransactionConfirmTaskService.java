@@ -29,7 +29,8 @@ import static org.starcoin.bifrost.utils.StarcoinOnChainUtils.getLatestBlockNumb
 public class StarcoinTransactionConfirmTaskService {
     private static final Logger LOG = LoggerFactory.getLogger(StarcoinTransactionConfirmTaskService.class);
 
-    private static final int NEEDED_BLOCK_CONFIRMATIONS = 1;
+    @Value("${starcoin.needed-block-confirmations}")
+    private Integer neededBlockConfirmations;
 
     @Value("${starcoin.transaction-confirm-task-service.confirm-Transaction-created-before-seconds}")
     private Long confirmTransactionCreatedBeforeSeconds;// = 5L;
@@ -78,7 +79,7 @@ public class StarcoinTransactionConfirmTaskService {
                 LOG.error("Get block error.", e);
                 continue;
             }
-            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(NEEDED_BLOCK_CONFIRMATIONS))) < 0) {
+            if (latestBlockNumber.compareTo(transactionBlockNumber.add(BigInteger.valueOf(neededBlockConfirmations))) < 0) {
                 LOG.debug("Transaction '" + t.getTransactionHash() + "' not confirmed yet.");
                 // ------------------------------------------
                 // Update transaction block info...

@@ -30,11 +30,9 @@ spring:
     properties:
       hibernate:
         hbm2ddl:
-          # auto: create # 开发阶段使用
-          auto: update
+          auto: none
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
-
 
   flyway:
     baselineOnMigrate: true
@@ -42,7 +40,7 @@ spring:
     # 设置 spring.flyway.baseline-on-migrate 为 true 后，flyway 将在需要 baseline 的时候, 自动执行一次 baseline。
     baselineVersion: 0.0.0
     cleanDisabled: true # flyway 的 clean 命令会删除指定 schema 下的所有 table，应该禁掉
-    enabled: false # 启用或禁用 flyway
+    enabled: true # 启用或禁用 flyway
     locations: classpath:db/migration # 设定 SQL 脚本的目录，比如取值为 classpath:db/migration,filesystem:/sql-migrations
     outOfOrder: false # 生产环境关闭 outOfOrder
     #spring.flyway.encoding=
@@ -52,18 +50,15 @@ spring:
     # 可以指定多个schema，但仅会在第一个 schema 下建立 metadata 表，也仅在第一个 schema 应用 migration sql 脚本，
     # 但 flyway clean 命令会依次在这些 schema 下都执行一遍。
 
+
 starcoin:
   seeds: ${STARCOIN_SEEDS}
   network: ${STARCOIN_NETWORK}
   json-rpc-url: ${STARCOIN_JSON_RPC_URL}
   sender-private-key: ${STARCOIN_SENDER_PRIVATE_KEY}
-  sender-address: "0x569AB535990a17Ac9Afd1bc57Faec683"
-  sender-public-key: "0x122b7632cf4aab6f0fc3e462db3601ecd3234d9567c8deac2808f5cda26add36"
-  chain-id: 254
-  # ----------------------------------
-  event-filter:
-    from-address: "0x569AB535990a17Ac9Afd1bc57Faec683"
-    cross-chain-deposit-event-type-tag: "0x569AB535990a17Ac9Afd1bc57Faec683::Bifrost::CrossChainDepositEvent"
+  sender-address: ${STARCOIN_SENDER_ADDRESS}
+  sender-public-key: ${STARCOIN_SENDER_PUBLIC_KEY}
+  chain-id: ${STARCOIN_CHAIN_ID}
   # ----------------------------------
   # starcoin transaction
   transaction-resend-task-service:
@@ -74,30 +69,26 @@ starcoin:
     confirm-Transaction-created-before-seconds: 5
   # ----------------------------------
   # from starcoin...
+  event-filter:
+    from-address: ${STARCOIN_EVENT_FILTER_FROM_ADDRESS}
+    cross-chain-deposit-event-type-tag: ${STARCOIN_CROSS_CHAIN_DEPOSIT_EVENT_TYPE_TAG}
   event-confirm-task-service:
     fixed-delay: 5000
     confirm-event-created-before-seconds: 5
   to-ethereum:
     create-transaction-for-event-confirmed-before-seconds: 5
     transaction-create-fixed-delay: 5000
+  # ----------------------------------
+  needed-block-confirmations: 1
+
 
 ethereum:
-  # websocket-service-url: wss://mainnet.infura.io/ws/v3/72637bfa15a940dcadcec25a6fe0fca1
-  # ----------------------------------
-  # ropsten config:
-  websocket-service-url: wss://ropsten.infura.io/ws/v3/72637bfa15a940dcadcec25a6fe0fca1
-  http-service-url: https://ropsten.infura.io/v3/72637bfa15a940dcadcec25a6fe0fca1
-  chain-id: 3 # ropsten
-  mint-stc-contract-address: "0xF21aF28b798E40B1b8734655C3662B360367914e"
-  sender-address: "0x71DFDD2BF49E8Af5226E0078efA31ecf258bC44E"
-  sender-private-key: "0xc9f5f173242c5323493c0595dd73be4bda87ab2d90b8ed4b9c047352562ff3b0"
-  # ----------------------------------
-  # local ganache config:
-  # http-service-url: HTTP://127.0.0.1:7545
-  # chain-id: 1337
-  # mint-stc-contract-address: "0x3d8c97DF6A0948f11273b0367579B1f0413DE0C4"
-  # sender-address: "0x414d6e7B82E9Ce949d468d502057483195C69df9"
-  # sender-private-key: "bc4f359cd7a64bca074ffdeafcd18e3c2a860f22c64611577fcb5108fec850da"
+  websocket-service-url: ${ETHEREUM_WS_SERVICE_URL}
+  http-service-url: ${ETHEREUM_HTTP_SERVICE_URL}
+  chain-id: ${ETHEREUM_CHAIN_ID}
+  mint-stc-contract-address: ${ETHEREUM_MINT_STC_CONTRACT_ADDRESS}
+  sender-address: ${ETHEREUM_SENDER_ADDRESS}
+  sender-private-key: ${ETHEREUM_SENDER_PRIVATE_KEY}
   # ----------------------------------
   # ethereum transaction
   transaction-resend-task-service:
@@ -108,17 +99,19 @@ ethereum:
     confirm-Transaction-created-before-seconds: 5
   # ----------------------------------
   # form ethereum...
-  withdraw-log-filter-address: "0xF21aF28b798E40B1b8734655C3662B360367914e"
+  withdraw-log-filter-address: ${ETHEREUM_WITHDRAW_LOG_FILTER_ADDRESS}
   log-confirm-task-service:
     fixed-delay: 5000
     confirm-log-created-before-seconds: 5
   to-starcoin:
     create-transaction-for-log-confirmed-before-seconds: 5
     transaction-create-fixed-delay: 5000
+  # ----------------------------------
+  needed-block-confirmations: 1
 
 
 token-price-service:
-  base-url: http://k8s-default-starcoin-cbf39ae390-308376289.ap-northeast-1.elb.amazonaws.com/barnard
+  base-url: ${TOKEN_PRICE_SERVICE_BASE_URL}
   get-wei-to-nano-stc-exchange-rate-url: ${token-price-service.base-url}/v1/exchangeRates/WEI_NANOSTC
 
 
@@ -137,10 +130,10 @@ logging:
       springframework:
         web:
           filter:
-            CommonsRequestLoggingFilter: DEBUG
+            CommonsRequestLoggingFilter: INFO
       starcoin:
-        bifrost: DEBUG
-      # 输出数据库模型（开发阶段）
+        bifrost: INFO
       hibernate:
         tool:
-          hbm2ddl: DEBUG
+          hbm2ddl: INFO
+

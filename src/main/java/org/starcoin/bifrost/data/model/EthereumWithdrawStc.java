@@ -3,7 +3,6 @@ package org.starcoin.bifrost.data.model;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Entity
