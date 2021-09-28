@@ -25,9 +25,8 @@ import java.util.List;
 import static org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler.decodeLog;
 
 @Component
-public class EthereumPullingLogTaskService {
-    private static final Logger LOG = LoggerFactory.getLogger(EthereumPullingLogTaskService.class);
-
+public class EthereumPullingLogTaskExecuteTaskService {
+    private static final Logger LOG = LoggerFactory.getLogger(EthereumPullingLogTaskExecuteTaskService.class);
 
     @Value("${ethereum.withdraw-log-filter-address}")
     private String ethereumWithdrawLogFilterAddress;
