@@ -7,11 +7,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.starcoin.bifrost.data.UnknownDataIntegrityViolationException;
+import org.starcoin.bifrost.data.model.AbstractNodeHeartbeat;
+import org.starcoin.bifrost.data.model.StarcoinNodeHeartbeat;
 import org.starcoin.bifrost.data.model.StcToEthereum;
-import org.starcoin.bifrost.data.repo.DroppedEthereumTransactionRepository;
-import org.starcoin.bifrost.data.repo.EthereumTransactionRepository;
-import org.starcoin.bifrost.data.repo.StarcoinEventRepository;
-import org.starcoin.bifrost.data.repo.UnexpectedEthereumTransactionRepository;
+import org.starcoin.bifrost.data.repo.*;
 import org.starcoin.bifrost.data.utils.IdUtils;
 import org.starcoin.bifrost.service.*;
 import org.starcoin.bifrost.utils.StarcoinOnChainUtils;
@@ -49,12 +48,14 @@ class BifrostRelayApplicationTests {
     UnexpectedEthereumTransactionRepository unexpectedEthereumTransactionRepository;
     @Autowired
     StarcoinEventRepository starcoinEventRepository;
+    @Autowired
+    StarcoinNodeHeartbeatService starcoinNodeHeartbeatService;
 
 //	@Test
 //	void contextLoads() throws IOException {
 //  }
 
-//    @Test
+    //    @Test
 //    void testResetEthereumAccount() throws IOException {
 //        //ethereumAccountService.resetTransactionCount(ethereumTransactionService.getMintStcSenderAddress());
 //    }
@@ -64,6 +65,9 @@ class BifrostRelayApplicationTests {
     StarcoinTransactionOnChainService starcoinTransactionOnChainService;
     @Autowired
     TokenPriceService tokenPriceService;
+    @Autowired
+    StarcoinNodeHeartbeatRepository nodeHeartbeatRepository;
+    // //////////////////////////////////////////////
 
     @Test
     @Order(1)
@@ -72,11 +76,11 @@ class BifrostRelayApplicationTests {
         BigDecimal weiToNanoStcExRate = tokenPriceService.getWeiToNanoStcExchangeRate();
         System.out.println("weiToNanoStcExRate: " + weiToNanoStcExRate);
     }
-    // //////////////////////////////////////////////
 
     @Test
     @Order(1)
     void testStarcoinTransactionService() {
+        if (true) return;
         // test get on-chain information...
         //BigInteger senderSequenceNumber = starcoinTransactionOnChainService.getSenderSequenceNumber();
         BigInteger senderSequenceNumber = starcoinTransactionService.getAccountSequenceNumberAndIncrease();
@@ -179,7 +183,7 @@ class BifrostRelayApplicationTests {
     @Order(3)
     void testMintStcTransactions() throws IOException {
         ethereumAccountService.resetByOnChainTransactionCount(ethereumTransactionOnChainService.getSenderAddress());
-        if (true) {return;}
+        if (true) return;
         String senderAddress = ethereumTransactionOnChainService.getSenderAddress();
         BigInteger gasPrice = ethereumTransactionOnChainService.getOnChainGasPrice();
 
@@ -356,6 +360,65 @@ class BifrostRelayApplicationTests {
                 unexpectedEthereumTransactionRepository.findByTransactionHashIn(unexpectedTransactionHashes).size(),
                 unexpectedTransactionHashes.length
         );
+    }
+
+    @Test
+    @Order(1)
+    void testAddStarcoinNodeHeartbeats() {
+        StarcoinNodeHeartbeat b7 = new StarcoinNodeHeartbeat();
+        b7.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b7.setStartedAt(BigInteger.valueOf(79));
+        b7.setBeatenAt(BigInteger.valueOf(92));
+        addStarcoinNodeHeartbeat(b7);
+
+        StarcoinNodeHeartbeat b6 = new StarcoinNodeHeartbeat();
+        b6.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b6.setStartedAt(BigInteger.valueOf(91));
+        b6.setBeatenAt(BigInteger.valueOf(100));
+        addStarcoinNodeHeartbeat(b6);
+
+        StarcoinNodeHeartbeat b5 = new StarcoinNodeHeartbeat();
+        b5.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b5.setStartedAt(BigInteger.valueOf(60));
+        b5.setBeatenAt(BigInteger.valueOf(71));
+        addStarcoinNodeHeartbeat(b5);
+
+        StarcoinNodeHeartbeat b4 = new StarcoinNodeHeartbeat();
+        b4.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b4.setStartedAt(BigInteger.valueOf(71));
+        b4.setBeatenAt(BigInteger.valueOf(80));
+        addStarcoinNodeHeartbeat(b4);
+
+        StarcoinNodeHeartbeat b3 = new StarcoinNodeHeartbeat();
+        b3.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b3.setStartedAt(BigInteger.valueOf(51));
+        b3.setBeatenAt(BigInteger.valueOf(60));
+        addStarcoinNodeHeartbeat(b3);
+
+        StarcoinNodeHeartbeat b2 = new StarcoinNodeHeartbeat();
+        b2.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b2.setStartedAt(BigInteger.valueOf(21));
+        b2.setBeatenAt(BigInteger.valueOf(30));
+        addStarcoinNodeHeartbeat(b2);
+
+        StarcoinNodeHeartbeat b1 = new StarcoinNodeHeartbeat();
+        b1.setNodeId("0x" + UUID.randomUUID().toString().replace("-", ""));
+        b1.setStartedAt(BigInteger.valueOf(1));
+        b1.setBeatenAt(BigInteger.valueOf(10));
+        addStarcoinNodeHeartbeat(b1);
+
+        List<AbstractNodeHeartbeat.Breakpoint> breakpoints = nodeHeartbeatRepository.findBreakpoints();
+        breakpoints.forEach(b -> System.out.println(b.getBeatenAt() + "\t" + b.getIsEndPoint()));
+
+        System.out.println(starcoinNodeHeartbeatService.findBreakIntervals());
+    }
+
+    private void addStarcoinNodeHeartbeat(StarcoinNodeHeartbeat b) {
+        b.setCreatedAt(System.currentTimeMillis());
+        b.setCreatedBy("admin");
+        b.setUpdatedAt(b.getCreatedAt());
+        b.setUpdatedBy(b.getCreatedBy());
+        nodeHeartbeatRepository.save(b);
     }
 
 }
