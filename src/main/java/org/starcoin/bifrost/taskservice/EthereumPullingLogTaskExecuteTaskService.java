@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.starcoin.bifrost.data.model.EthereumPullingLogTask;
 import org.starcoin.bifrost.data.model.EthereumWithdrawStc;
 import org.starcoin.bifrost.service.EthereumLogService;
+import org.starcoin.bifrost.service.EthereumPullingLogTaskService;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscriber;
 import org.web3j.protocol.Web3j;
@@ -37,10 +39,23 @@ public class EthereumPullingLogTaskExecuteTaskService {
     @Autowired
     private EthereumLogService ethereumLogService;
 
-    @Scheduled(fixedDelay = 5000)//todo config
+    @Autowired
+    private EthereumPullingLogTaskService ethereumPullingLogTaskService;
+
+    @Scheduled(fixedDelay = 5000)//todo config fixed delay
     public void task() {
-        DefaultBlockParameter fromBlock = new DefaultBlockParameterNumber(10917260L);//todo using test number
-        DefaultBlockParameter toBlock = new DefaultBlockParameterNumber(10917381L);
+        List<EthereumPullingLogTask> pullingEventTasks = ethereumPullingLogTaskService.getPullingTaskToProcess();
+        if (pullingEventTasks == null || pullingEventTasks.isEmpty()) {
+            return;
+        }
+        for (EthereumPullingLogTask t : pullingEventTasks) {
+            executeTask(t);
+        }
+    }
+
+    private void executeTask(EthereumPullingLogTask t) {
+        DefaultBlockParameter fromBlock = new DefaultBlockParameterNumber(t.getFromBlockNumber());
+        DefaultBlockParameter toBlock = new DefaultBlockParameterNumber(t.getToBlockNumber());
         EthFilter filter = new EthFilter(fromBlock, toBlock, ethereumWithdrawLogFilterAddress)
                 .addSingleTopic(EthereumWithdrawSubscriber.TOPIC_CROSS_CHAIN_WITHDRAW_EVENT);
         List<Log> logs = new ArrayList<>();
@@ -102,6 +117,7 @@ public class EthereumPullingLogTaskExecuteTaskService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("End of pulling and saved.");
         }
-        // todo set task status to done.
+        ethereumPullingLogTaskService.updateStatusDone(t);
+        //nodeHeartbeatService.beat(t.getToBlockNumber());
     }
 }
