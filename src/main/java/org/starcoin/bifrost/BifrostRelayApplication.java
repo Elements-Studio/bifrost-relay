@@ -10,7 +10,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.starcoin.bifrost.data.repo.EthereumLogRepository;
+import org.starcoin.bifrost.service.EthereumLogService;
 import org.starcoin.bifrost.service.EthereumTransactionServiceFacade;
 import org.starcoin.bifrost.service.StarcoinEventService;
 import org.starcoin.bifrost.service.StarcoinTransactionServiceFacade;
@@ -47,7 +47,7 @@ public class BifrostRelayApplication {
     private String starcoinCrossChainDepositEventTypeTag;
 
     @Autowired
-    private EthereumLogRepository ethereumLogRepository;
+    private EthereumLogService ethereumLogService;
 
     @Autowired
     private EthereumTransactionServiceFacade ethereumTransactionServiceFacade;
@@ -67,7 +67,7 @@ public class BifrostRelayApplication {
     void runEthereumWithdrawSubscribeHandler() {
         LOG.info("EXECUTING : EthereumWithdrawSubscribeHandler");
         Thread handlerThread = new Thread(new EthereumWithdrawSubscribeHandler(ethereumWebSocketServiceUrl,
-                ethereumWithdrawLogFilterAddress, ethereumLogRepository));
+                ethereumWithdrawLogFilterAddress, ethereumLogService));
         handlerThread.start();
     }
 

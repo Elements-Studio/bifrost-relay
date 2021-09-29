@@ -15,8 +15,12 @@ import java.util.function.Supplier;
 @Service
 public class StarcoinNodeHeartbeatService extends AbstractNodeHeartbeatService<StarcoinNodeHeartbeat> {
 
+    private final StarcoinNodeHeartbeatRepository starcoinNodeHeartbeatRepository;
+
     @Autowired
-    private StarcoinNodeHeartbeatRepository starcoinNodeHeartbeatRepository;
+    public StarcoinNodeHeartbeatService(StarcoinNodeHeartbeatRepository starcoinNodeHeartbeatRepository) {
+        this.starcoinNodeHeartbeatRepository = starcoinNodeHeartbeatRepository;
+    }
 
     @Override
     protected Function<NodeHeartbeatId, StarcoinNodeHeartbeat> findByIdOrElseNullFunction() {

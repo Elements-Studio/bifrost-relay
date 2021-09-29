@@ -15,8 +15,12 @@ import java.util.function.Supplier;
 @Service
 public class EthereumNodeHeartbeatService extends AbstractNodeHeartbeatService<EthereumNodeHeartbeat> {
 
+    private final EthereumNodeHeartbeatRepository ethereumNodeHeartbeatRepository;
+
     @Autowired
-    private EthereumNodeHeartbeatRepository ethereumNodeHeartbeatRepository;
+    public EthereumNodeHeartbeatService(EthereumNodeHeartbeatRepository ethereumNodeHeartbeatRepository) {
+        this.ethereumNodeHeartbeatRepository = ethereumNodeHeartbeatRepository;
+    }
 
     @Override
     protected Function<NodeHeartbeatId, EthereumNodeHeartbeat> findByIdOrElseNullFunction() {

@@ -106,6 +106,8 @@ ethereum:
   to-starcoin:
     create-transaction-for-log-confirmed-before-seconds: 5
     transaction-create-fixed-delay: 5000
+  pulling-log-task-execute-task-service:
+    fixed-delay: 20000
   # ----------------------------------
   needed-block-confirmations: 1
 

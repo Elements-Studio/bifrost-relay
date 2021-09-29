@@ -8,7 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.starcoin.bifrost.data.model.EthereumPullingLogTask;
 import org.starcoin.bifrost.data.model.EthereumWithdrawStc;
+import org.starcoin.bifrost.data.repo.EthereumNodeHeartbeatRepository;
 import org.starcoin.bifrost.service.EthereumLogService;
+import org.starcoin.bifrost.service.EthereumNodeHeartbeatService;
 import org.starcoin.bifrost.service.EthereumPullingLogTaskService;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscriber;
@@ -41,6 +43,9 @@ public class EthereumPullingLogTaskExecuteTaskService {
 
     @Autowired
     private EthereumPullingLogTaskService ethereumPullingLogTaskService;
+
+    @Autowired
+    private EthereumNodeHeartbeatRepository ethereumNodeHeartbeatRepository;
 
     private static EthereumWithdrawStc getEthereumWithdrawStc(Log log) {
         return decodeLog(
@@ -80,7 +85,7 @@ public class EthereumPullingLogTaskExecuteTaskService {
         );
     }
 
-    @Scheduled(fixedDelay = 5000)//todo config fixed delay
+    @Scheduled(fixedDelayString = "${ethereum.pulling-log-task-execute-task-service.fixed-delay}")
     public void task() {
         List<EthereumPullingLogTask> pullingEventTasks = ethereumPullingLogTaskService.getPullingTaskToProcess();
         if (pullingEventTasks == null || pullingEventTasks.isEmpty()) {
@@ -106,22 +111,21 @@ public class EthereumPullingLogTaskExecuteTaskService {
             LOG.error("Web3j ethGetLogs error.", exception);
             return;
         }
+        // use a new individual nodeId to record heartbeats.
+        EthereumNodeHeartbeatService nodeHeartbeatService = new EthereumNodeHeartbeatService(ethereumNodeHeartbeatRepository);
+        nodeHeartbeatService.beat(t.getFromBlockNumber());
         for (Log log : logs) {
             EthereumWithdrawStc withdrawStc = getEthereumWithdrawStc(log);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Withdraw STC on ethereum chain: " + withdrawStc);
             }
-            try {
-                ethereumLogService.trySave(withdrawStc);
-            } catch (RuntimeException e) {
-                LOG.error("Save ethereum withdraw STC error.", e);
-                return;
-            }
+            ethereumLogService.trySave(withdrawStc);
+
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("End of pulling and saved.");
         }
         ethereumPullingLogTaskService.updateStatusDone(t);
-        //nodeHeartbeatService.beat(t.getToBlockNumber());
+        nodeHeartbeatService.beat(t.getToBlockNumber());
     }
 }

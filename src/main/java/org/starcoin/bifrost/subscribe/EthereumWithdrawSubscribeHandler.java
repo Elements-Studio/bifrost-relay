@@ -4,9 +4,9 @@ import io.reactivex.Flowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starcoin.bifrost.data.model.EthereumWithdrawStc;
-import org.starcoin.bifrost.data.repo.EthereumLogRepository;
 import org.starcoin.bifrost.data.utils.IdUtils;
 import org.starcoin.bifrost.ethereum.model.STC;
+import org.starcoin.bifrost.service.EthereumLogService;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.protocol.websocket.WebSocketService;
@@ -28,12 +28,13 @@ public class EthereumWithdrawSubscribeHandler implements Runnable {
 
     private final String logFilterAddress;
 
-    private final EthereumLogRepository ethereumLogRepository;
+    private final EthereumLogService ethereumLogService;
 
-    public EthereumWithdrawSubscribeHandler(String webSocketServiceUrl, String logFilterAddress, EthereumLogRepository ethereumLogRepository) {
+    public EthereumWithdrawSubscribeHandler(String webSocketServiceUrl, String logFilterAddress,
+                                            EthereumLogService ethereumLogService) {
         this.webSocketServiceUrl = webSocketServiceUrl;
         this.logFilterAddress = logFilterAddress;
-        this.ethereumLogRepository = ethereumLogRepository;
+        this.ethereumLogService = ethereumLogService;
     }
 
     public static EthereumWithdrawStc decodeLog(LogWrapper log) {
@@ -143,7 +144,7 @@ public class EthereumWithdrawSubscribeHandler implements Runnable {
 //                }
                 // 0x000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000000000001
                 EthereumWithdrawStc withdrawStc = getEthereumWithdrawStc(log);
-                ethereumLogRepository.save(withdrawStc);
+                ethereumLogService.trySave(withdrawStc);
             }
         } catch (ConnectException e) {
             LOG.info("handle subscribe exception", e);
