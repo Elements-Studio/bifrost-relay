@@ -42,6 +42,44 @@ public class EthereumPullingLogTaskExecuteTaskService {
     @Autowired
     private EthereumPullingLogTaskService ethereumPullingLogTaskService;
 
+    private static EthereumWithdrawStc getEthereumWithdrawStc(Log log) {
+        return decodeLog(
+                new EthereumWithdrawSubscribeHandler.LogWrapper() {
+                    public String getAddress() {
+                        return log.getAddress();
+                    }
+
+                    public String getBlockHash() {
+                        return log.getBlockHash();
+                    }
+
+                    public String getTransactionHash() {
+                        return log.getTransactionHash();
+                    }
+
+                    public BigInteger getTransactionIndex() {
+                        return log.getTransactionIndex();
+                    }
+
+                    public BigInteger getLogIndex() {
+                        return log.getLogIndex();
+                    }
+
+                    public String getData() {
+                        return log.getData();
+                    }
+
+                    public List<String> getTopics() {
+                        return log.getTopics();
+                    }
+
+                    public BigInteger getBlockNumber() {
+                        return log.getBlockNumber();
+                    }
+                }
+        );
+    }
+
     @Scheduled(fixedDelay = 5000)//todo config fixed delay
     public void task() {
         List<EthereumPullingLogTask> pullingEventTasks = ethereumPullingLogTaskService.getPullingTaskToProcess();
@@ -69,41 +107,7 @@ public class EthereumPullingLogTaskExecuteTaskService {
             return;
         }
         for (Log log : logs) {
-            EthereumWithdrawStc withdrawStc = decodeLog(
-                    new EthereumWithdrawSubscribeHandler.LogWrapper() {
-                        public String getAddress() {
-                            return log.getAddress();
-                        }
-
-                        public String getBlockHash() {
-                            return log.getBlockHash();
-                        }
-
-                        public String getTransactionHash() {
-                            return log.getTransactionHash();
-                        }
-
-                        public BigInteger getTransactionIndex() {
-                            return log.getTransactionIndex();
-                        }
-
-                        public BigInteger getLogIndex() {
-                            return log.getLogIndex();
-                        }
-
-                        public String getData() {
-                            return log.getData();
-                        }
-
-                        public List<String> getTopics() {
-                            return log.getTopics();
-                        }
-
-                        public BigInteger getBlockNumber() {
-                            return log.getBlockNumber();
-                        }
-                    }
-            );
+            EthereumWithdrawStc withdrawStc = getEthereumWithdrawStc(log);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Withdraw STC on ethereum chain: " + withdrawStc);
             }

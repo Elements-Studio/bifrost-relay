@@ -77,6 +77,44 @@ public class EthereumWithdrawSubscribeHandler implements Runnable {
         return withdrawStc;
     }
 
+    private static EthereumWithdrawStc getEthereumWithdrawStc(Log log) {
+        return decodeLog(
+                new LogWrapper() {
+                    public String getAddress() {
+                        return log.getAddress();
+                    }
+
+                    public String getBlockHash() {
+                        return log.getBlockHash();
+                    }
+
+                    public String getTransactionHash() {
+                        return log.getTransactionHash();
+                    }
+
+                    public BigInteger getTransactionIndex() {
+                        return hexToBigInteger(log.getTransactionIndex());
+                    }
+
+                    public BigInteger getLogIndex() {
+                        return hexToBigInteger(log.getLogIndex());
+                    }
+
+                    public String getData() {
+                        return log.getData();
+                    }
+
+                    public List<String> getTopics() {
+                        return log.getTopics();
+                    }
+
+                    public BigInteger getBlockNumber() {
+                        return hexToBigInteger(log.getBlockNumber());
+                    }
+                }
+        );
+    }
+
     private String getWebSocketServiceUrl() {
         return this.webSocketServiceUrl;
     }
@@ -104,41 +142,7 @@ public class EthereumWithdrawSubscribeHandler implements Runnable {
 //                    LOG.debug(message);
 //                }
                 // 0x000000000000000000000000000000000000000000000000000000003b9aca000000000000000000000000000000000000000000000000000000000000000001
-                EthereumWithdrawStc withdrawStc = decodeLog(
-                        new LogWrapper() {
-                            public String getAddress() {
-                                return log.getAddress();
-                            }
-
-                            public String getBlockHash() {
-                                return log.getBlockHash();
-                            }
-
-                            public String getTransactionHash() {
-                                return log.getTransactionHash();
-                            }
-
-                            public BigInteger getTransactionIndex() {
-                                return hexToBigInteger(log.getTransactionIndex());
-                            }
-
-                            public BigInteger getLogIndex() {
-                                return hexToBigInteger(log.getLogIndex());
-                            }
-
-                            public String getData() {
-                                return log.getData();
-                            }
-
-                            public List<String> getTopics() {
-                                return log.getTopics();
-                            }
-
-                            public BigInteger getBlockNumber() {
-                                return hexToBigInteger(log.getBlockNumber());
-                            }
-                        }
-                );
+                EthereumWithdrawStc withdrawStc = getEthereumWithdrawStc(log);
                 ethereumLogRepository.save(withdrawStc);
             }
         } catch (ConnectException e) {
