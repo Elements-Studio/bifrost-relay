@@ -71,11 +71,22 @@ public class EthereumHandleLogService {
     }
 
     public void handle(LogWrapper log) {
-        EthereumWithdrawStc withdrawStc = decodeLog(log);
-        boolean eventHandled = ethereumLogService.trySave(withdrawStc);
+        boolean eventHandled;
+        try {
+            EthereumWithdrawStc withdrawStc = decodeLog(log);
+            ethereumLogService.save(withdrawStc);
+            eventHandled = true;
+        } catch (org.springframework.dao.DataIntegrityViolationException
+                | org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+            LOG.info("Handle log encountered known exception.", e);
+            eventHandled = true;
+        } catch (RuntimeException runtimeException) {
+            LOG.error("Handle log error, log: " + log, runtimeException);
+            eventHandled = false;
+        }
         try {
             if (eventHandled) {
-                ethereumNodeHeartbeatService.beat(withdrawStc.getBlockNumber());
+                ethereumNodeHeartbeatService.beat(log.getBlockNumber());
             } else {
                 ethereumNodeHeartbeatService.reset();
             }

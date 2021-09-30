@@ -15,22 +15,21 @@ public class EthereumLogService {
     @Autowired
     private EthereumLogRepository ethereumLogRepository;
 
-
-    public boolean trySave(EthereumWithdrawStc withdrawStc) {
-        boolean eventHandled;
+    public void save(EthereumWithdrawStc withdrawStc) {
+        //boolean eventHandled;
         EthereumLog ethereumLog = ethereumLogRepository.findById(withdrawStc.getLogId()).orElse(null);
         if (ethereumLog != null) {
-            eventHandled = true;
-        } else {
-            try {
-                ethereumLogRepository.save(withdrawStc);
-                eventHandled = true;
-            } catch (RuntimeException e) {
-                LOG.error("Save ethereum withdraw STC log error.", e);
-                eventHandled = false;
-            }
-        }
-        return eventHandled;
+            return;//eventHandled = true;
+        } //else {
+        //try {
+        ethereumLogRepository.save(withdrawStc);
+        //    eventHandled = true;
+        //} catch (RuntimeException e) {
+        //    LOG.error("Save ethereum withdraw STC log error.", e);
+        //    eventHandled = false;
+        //}
+        //}
+        //return eventHandled;
     }
 
 }
