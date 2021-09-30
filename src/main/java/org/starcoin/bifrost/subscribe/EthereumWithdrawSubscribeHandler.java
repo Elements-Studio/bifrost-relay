@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.util.List;
 
+import static org.starcoin.bifrost.subscribe.EthereumWithdrawSubscriber.TOPIC_CROSS_CHAIN_WITHDRAW_EVENT;
 import static org.starcoin.bifrost.utils.HexUtils.hexToBigInteger;
 
 public class EthereumWithdrawSubscribeHandler implements Runnable {
@@ -38,14 +39,17 @@ public class EthereumWithdrawSubscribeHandler implements Runnable {
     }
 
     public static EthereumWithdrawStc decodeLog(LogWrapper log) {
+        if (!TOPIC_CROSS_CHAIN_WITHDRAW_EVENT.equals(log.getTopics().get(0))) {
+            throw new RuntimeException("Decode wrong log type, topic: " + log.getTopics().get(0));
+        }
+        //todo filter by fromChain???
+        //event CrossChainWithdrawEvent(address indexed from, bytes20 to, address indexed owner, uint256 value, uint8 from_chain);
         List<Type> data = FunctionReturnDecoder.decode(log.getData(), STC.CROSSCHAINWITHDRAWEVENT_EVENT.getNonIndexedParameters());
         BigInteger amount = (BigInteger) data.get(1).getValue();
         BigInteger fromChain = (BigInteger) data.get(2).getValue();
         byte[] toAddress = (byte[]) data.get(0).getValue();
         String fromAddress = FunctionReturnDecoder.decode(log.getTopics().get(1), STC.CROSSCHAINWITHDRAWEVENT_EVENT.getIndexedParameters().subList(0, 1)).get(0).toString();
-        //String toAddress = FunctionReturnDecoder.decode(log.getTopics().get(2), STC.CROSSCHAINWITHDRAWEVENT_EVENT.getIndexedParameters().subList(1, 2)).get(0).toString();
         String ownerAddress = FunctionReturnDecoder.decode(log.getTopics().get(2), STC.CROSSCHAINWITHDRAWEVENT_EVENT.getIndexedParameters().subList(1, 2)).get(0).toString();
-        //String ownerAddress = FunctionReturnDecoder.decode(log.getTopics().get(3), STC.CROSSCHAINWITHDRAWEVENT_EVENT.getIndexedParameters().subList(2, 3)).get(0).toString();
         EthereumWithdrawStc withdrawStc = createEthereumWithdrawStc(
                 log,
                 Numeric.toHexString(toAddress), amount, fromAddress, ownerAddress, fromChain);

@@ -58,10 +58,11 @@ public class StarcoinCrossChainDepositSubscribeHandler implements Runnable {
                 if (notification.getParams() == null || notification.getParams().getResult() == null) {
                     continue;
                 }
-                CrossChainDepositEvent event = notification.getParams().getResult();
+                StarcoinEvent event = notification.getParams().getResult();
                 LOG.debug("Received event: " + event);
+                //todo filter event by event.type_tag and to_chain
                 StcToEthereum stcToEthereum = new StcToEthereum();
-                CrossChainDepositEvent.copyProperties(event, stcToEthereum);
+                StarcoinEvent.copyProperties(event, stcToEthereum);
                 starcoinEventService.save(stcToEthereum);
             }
         } catch (ConnectException e) {

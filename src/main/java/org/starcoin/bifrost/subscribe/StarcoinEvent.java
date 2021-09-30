@@ -8,9 +8,10 @@ import org.starcoin.bifrost.utils.HexUtils;
 import java.math.BigInteger;
 
 /**
- * Starcoin on-chain CrossChainDepositEvent.
+ * Starcoin on-chain Event.
+ * Now it is only CrossChainDepositEvent.
  */
-public class CrossChainDepositEvent {
+public class StarcoinEvent {
 
     //public DecodeEventData decode_event_data;
     public String block_hash;// "0xc75a3245bad20b0b129c8778810b7f8bdbc4fee2fe208f719299d92368637329",
@@ -46,7 +47,7 @@ public class CrossChainDepositEvent {
      * "event_seq_number": "7"
      * }
      */
-    public static void copyProperties(CrossChainDepositEvent src, StcToEthereum e) {
+    public static void copyProperties(StarcoinEvent src, StcToEthereum e) {
         org.starcoin.bifrost.types.CrossChainDepositEvent decode_event_data;
         try {
             decode_event_data = org.starcoin.bifrost.types.CrossChainDepositEvent
@@ -67,7 +68,7 @@ public class CrossChainDepositEvent {
         e.setDepositAmount(decode_event_data.value);
 //        src.decode_event_data.from;
 //        src.decode_event_data.owner;
-//        src.decode_event_data.to_chain;
+//        src.decode_event_data.to_chain; //todo filter 'to_chain'
 //        src.decode_event_data.token_code;
         e.setCreatedAt(System.currentTimeMillis());
         e.setCreatedBy("ADMIN");

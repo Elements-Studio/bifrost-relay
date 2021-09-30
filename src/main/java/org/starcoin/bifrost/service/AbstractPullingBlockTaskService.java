@@ -37,7 +37,7 @@ public abstract class AbstractPullingBlockTaskService<T extends AbstractPullingB
             targetPullingTask.setCreatedBy("ADMIN");
             targetPullingTask.setUpdatedAt(targetPullingTask.getCreatedAt());
             targetPullingTask.setUpdatedBy(targetPullingTask.getCreatedBy());
-        } else {
+        } else if (AbstractPullingBlockTask.STATUS_DONE.equalsIgnoreCase(targetPullingTask.getStatus())) {
             targetPullingTask.setUpdatedAt(System.currentTimeMillis());
             targetPullingTask.setUpdatedBy("ADMIN");
             targetPullingTask.resetStatus();
@@ -58,7 +58,7 @@ public abstract class AbstractPullingBlockTaskService<T extends AbstractPullingB
             targetPullingTask.setCreatedBy("ADMIN");
             targetPullingTask.setUpdatedAt(targetPullingTask.getCreatedAt());
             targetPullingTask.setUpdatedBy(targetPullingTask.getCreatedBy());
-        } else {
+        } else if (AbstractPullingBlockTask.STATUS_DONE.equalsIgnoreCase(targetPullingTask.getStatus())) {
             targetPullingTask.setToBlockNumber(toBlockNumber);
             targetPullingTask.setUpdatedAt(System.currentTimeMillis());
             targetPullingTask.setUpdatedBy("ADMIN");
@@ -75,8 +75,14 @@ public abstract class AbstractPullingBlockTaskService<T extends AbstractPullingB
         savePullingTaskConsumer().accept(t); //pullingEventTaskRepository.save(t);
     }
 
+    @Transactional
     public List<T> getPullingTaskToProcess() {
-        return findByStatusEqualsFunction().apply(T.STATUS_CREATED); //pullingEventTaskRepository.findByStatusEquals(T.STATUS_CREATED);
+        List<T> tasks = findByStatusEqualsFunction().apply(T.STATUS_CREATED); //pullingEventTaskRepository.findByStatusEquals(T.STATUS_CREATED);
+        for (T t : tasks) {
+            t.processing();
+            savePullingTaskConsumer().accept(t);
+        }
+        return tasks;
     }
 
 }

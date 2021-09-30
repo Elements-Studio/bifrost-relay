@@ -120,7 +120,6 @@ public class EthereumPullingLogTaskExecuteTaskService {
                 LOG.debug("Withdraw STC on ethereum chain: " + withdrawStc);
             }
             ethereumLogService.trySave(withdrawStc);
-
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("End of pulling and saved.");

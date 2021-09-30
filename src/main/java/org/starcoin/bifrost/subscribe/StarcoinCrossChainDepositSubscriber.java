@@ -47,7 +47,7 @@ public class StarcoinCrossChainDepositSubscriber {
         return eventFilter;
     }
 
-    public static class EventNotification extends Notification<CrossChainDepositEvent> {
+    public static class EventNotification extends Notification<StarcoinEvent> {
         //
     }
 
