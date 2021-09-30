@@ -1,10 +1,7 @@
 package org.starcoin.bifrost.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.novi.serde.SerializationError;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.starcoin.bifrost.rpc.JsonRpcClient;
 import org.starcoin.bifrost.utils.HexUtils;
 import org.starcoin.bifrost.utils.StarcoinAccountAddressUtils;
 import org.starcoin.bifrost.utils.StarcoinOnChainUtils;
+import org.starcoin.jsonrpc.client.JSONRPC2Session;
 import org.starcoin.types.*;
 import org.starcoin.utils.AccountAddressUtils;
 import org.starcoin.utils.SignatureUtils;
@@ -111,16 +109,10 @@ public class StarcoinTransactionOnChainService {
     }
 
     public BigInteger estimateDepositStcGas(String from, String to, BigInteger amount, Integer fromChain) {
-        Map<String, Object> m;
-        try {
-            m = new JsonRpcClient(jsonRpcSession).sendJsonRpc("contract.dry_run",
-                    Collections.singletonList(getWithdrawFromEthereumChainJsonRpcDryRunParam(from, to, amount, fromChain)), //Arrays.asList(getTransferScriptsPeerToPeerJsonRpcDryRunParam()),
-                    new TypeReference<Map<String, Object>>() {
-                    });
-        } catch (JSONRPC2SessionException | JsonProcessingException e) {
-            LOG.error("Send contract.dry_run error.");
-            throw new RuntimeException(e);
-        }
+        Map<String, Object> m = new JsonRpcClient(jsonRpcSession).sendJsonRpc("contract.dry_run",
+                Collections.singletonList(getWithdrawFromEthereumChainJsonRpcDryRunParam(from, to, amount, fromChain)), //Arrays.asList(getTransferScriptsPeerToPeerJsonRpcDryRunParam()),
+                new TypeReference<Map<String, Object>>() {
+                });
         if (!"Executed".equalsIgnoreCase(m.get("explained_status").toString())) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Dry-run error." + m);

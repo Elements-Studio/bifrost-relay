@@ -1,12 +1,11 @@
 package org.starcoin.bifrost.rpc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
-import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
+import org.starcoin.jsonrpc.JSONRPC2Request;
+import org.starcoin.jsonrpc.JSONRPC2Response;
+import org.starcoin.jsonrpc.client.JSONRPC2Session;
+import org.starcoin.jsonrpc.client.JSONRPC2SessionException;
 
 import java.util.List;
 import java.util.function.Function;
@@ -19,33 +18,34 @@ public class JsonRpcClient {
         this.jsonRpcSession = jsonRpcSession;
     }
 
-    public <T> T sendJsonRpc(String method, List<Object> params, Class<T> resultType)
-            throws JSONRPC2SessionException, JsonProcessingException {
+    public <T> T sendJsonRpc(String method, List<Object> params, Class<T> resultType) {
         return sendJsonRpc(method, params, (resultObj) -> {
             return resultObj == null ? null
                     : getObjectMapper().convertValue(resultObj, resultType);
         });
     }
 
-    public Object sendJsonRpc(String method, List<Object> params)
-            throws JSONRPC2SessionException, JsonProcessingException {
+    public Object sendJsonRpc(String method, List<Object> params) {
         return sendJsonRpc(method, params, (resultObj) -> {
             return resultObj;
         });
     }
 
-    public <T> T sendJsonRpc(String method, List<Object> params, TypeReference<T> resultType)
-            throws JSONRPC2SessionException, JsonProcessingException {
+    public <T> T sendJsonRpc(String method, List<Object> params, TypeReference<T> resultType) {
         return sendJsonRpc(method, params, (resultObj) -> {
             return resultObj == null ? null
                     : getObjectMapper().convertValue(resultObj, resultType);
         });
     }
 
-    private <T> T sendJsonRpc(String method, List<Object> params, Function<Object, T> readResult)
-            throws JSONRPC2SessionException {
+    private <T> T sendJsonRpc(String method, List<Object> params, Function<Object, T> readResult) {
         JSONRPC2Request request = new JSONRPC2Request(method, params, System.currentTimeMillis());
-        JSONRPC2Response response = jsonRpcSession.send(request);
+        JSONRPC2Response response = null;
+        try {
+            response = jsonRpcSession.send(request);
+        } catch (JSONRPC2SessionException e) {
+            throw new RuntimeException("JSON RPC send error.", e);
+        }
         if (response.indicatesSuccess()) {
             Object result = response.getResult();
             //if (result != null) {

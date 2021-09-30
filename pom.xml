@@ -66,11 +66,11 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.thetransactioncompany</groupId>
-			<artifactId>jsonrpc2-client</artifactId>
-			<version>1.16.5</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.thetransactioncompany</groupId>-->
+<!--			<artifactId>jsonrpc2-client</artifactId>-->
+<!--			<version>1.16.5</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.starcoin</groupId>

@@ -2,8 +2,6 @@ package org.starcoin.bifrost.taskservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,8 @@ import org.starcoin.bifrost.rpc.JsonRpcClient;
 import org.starcoin.bifrost.service.EthereumTransactionOnChainService;
 import org.starcoin.bifrost.service.EthereumTransactionServiceFacade;
 import org.starcoin.bifrost.service.StarcoinEventService;
+import org.starcoin.jsonrpc.client.JSONRPC2Session;
+import org.starcoin.jsonrpc.client.JSONRPC2SessionException;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -31,14 +31,10 @@ import static org.starcoin.bifrost.utils.StarcoinOnChainUtils.getLatestBlockNumb
 @Component
 public class StarcoinEventConfirmTaskService {
     private static final Logger LOG = LoggerFactory.getLogger(StarcoinEventConfirmTaskService.class);
-
+    private final String jsonRpcUrl;
+    private final JSONRPC2Session jsonRpcSession;
     @Value("${starcoin.needed-block-confirmations}")
     private Integer neededBlockConfirmations;
-
-    private final String jsonRpcUrl;
-
-    private final JSONRPC2Session jsonRpcSession;
-
     @Value("${starcoin.event-confirm-task-service.confirm-event-created-before-seconds}")
     private Long confirmEventCreatedBeforeSeconds;// = 5L;
 
@@ -112,16 +108,11 @@ public class StarcoinEventConfirmTaskService {
 
     private boolean isTransactionStillThere(String transactionHash, String blockHash, BigInteger blockNumber) {
         String method = "chain.get_transaction_info";
-        try {
-            Map<String, Object> resultMap = new JsonRpcClient(jsonRpcSession).sendJsonRpc(method,
-                    Arrays.asList(transactionHash), new TypeReference<Map<String, Object>>() {
-                    });
-            return blockHash.equals(resultMap.get("block_hash")) &&
-                    blockNumber.compareTo(new BigInteger(resultMap.get("block_number").toString())) == 0;
-        } catch (JSONRPC2SessionException | JsonProcessingException e) {
-            LOG.error("JSON rpc error.", e);
-            throw new RuntimeException(e);
-        }
+        Map<String, Object> resultMap = new JsonRpcClient(jsonRpcSession).sendJsonRpc(method,
+                Arrays.asList(transactionHash), new TypeReference<Map<String, Object>>() {
+                });
+        return blockHash.equals(resultMap.get("block_hash")) &&
+                blockNumber.compareTo(new BigInteger(resultMap.get("block_number").toString())) == 0;
     }
 
 

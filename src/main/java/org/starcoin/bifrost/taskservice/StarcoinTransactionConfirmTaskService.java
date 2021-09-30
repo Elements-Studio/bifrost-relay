@@ -2,8 +2,6 @@ package org.starcoin.bifrost.taskservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
-import com.thetransactioncompany.jsonrpc2.client.JSONRPC2SessionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,8 @@ import org.starcoin.bifrost.data.model.AbstractStarcoinTransaction;
 import org.starcoin.bifrost.data.repo.StarcoinTransactionRepository;
 import org.starcoin.bifrost.rpc.JsonRpcClient;
 import org.starcoin.bifrost.service.StarcoinAccountService;
+import org.starcoin.jsonrpc.client.JSONRPC2Session;
+import org.starcoin.jsonrpc.client.JSONRPC2SessionException;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -28,17 +28,12 @@ import static org.starcoin.bifrost.utils.StarcoinOnChainUtils.getLatestBlockNumb
 @Component
 public class StarcoinTransactionConfirmTaskService {
     private static final Logger LOG = LoggerFactory.getLogger(StarcoinTransactionConfirmTaskService.class);
-
+    private final String jsonRpcUrl;
+    private final JSONRPC2Session jsonRpcSession;
     @Value("${starcoin.needed-block-confirmations}")
     private Integer neededBlockConfirmations;
-
     @Value("${starcoin.transaction-confirm-task-service.confirm-Transaction-created-before-seconds}")
     private Long confirmTransactionCreatedBeforeSeconds;// = 5L;
-
-    private String jsonRpcUrl;
-
-    private JSONRPC2Session jsonRpcSession;
-
     @Autowired
     private StarcoinTransactionRepository starcoinTransactionRepository;
 
@@ -58,15 +53,9 @@ public class StarcoinTransactionConfirmTaskService {
             return;
         }
         for (AbstractStarcoinTransaction t : transactions) {
-            Map<String, Object> resultMap;
-            try {
-                resultMap = new JsonRpcClient(jsonRpcSession).sendJsonRpc("chain.get_transaction_info",
-                        Arrays.asList(t.getTransactionHash()), new TypeReference<Map<String, Object>>() {
-                        });
-            } catch (JSONRPC2SessionException | JsonProcessingException | RuntimeException e) {
-                LOG.error("Get transaction infor error.", e);
-                continue;
-            }
+            Map<String, Object> resultMap = new JsonRpcClient(jsonRpcSession).sendJsonRpc("chain.get_transaction_info",
+                    Arrays.asList(t.getTransactionHash()), new TypeReference<Map<String, Object>>() {
+                    });
             if (resultMap == null || !resultMap.containsKey("block_hash")) {
                 LOG.error("Get transaction info error." + resultMap);
                 continue;
