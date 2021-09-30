@@ -10,9 +10,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.starcoin.bifrost.service.EthereumLogService;
+import org.starcoin.bifrost.service.EthereumHandleLogService;
 import org.starcoin.bifrost.service.EthereumTransactionServiceFacade;
-import org.starcoin.bifrost.service.StarcoinEventService;
+import org.starcoin.bifrost.service.StarcoinHandleEventService;
 import org.starcoin.bifrost.service.StarcoinTransactionServiceFacade;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler;
 import org.starcoin.bifrost.subscribe.StarcoinCrossChainDepositSubscribeHandler;
@@ -47,7 +47,7 @@ public class BifrostRelayApplication {
     private String starcoinCrossChainDepositEventTypeTag;
 
     @Autowired
-    private EthereumLogService ethereumLogService;
+    private EthereumHandleLogService ethereumHandleLogService;
 
     @Autowired
     private EthereumTransactionServiceFacade ethereumTransactionServiceFacade;
@@ -56,7 +56,7 @@ public class BifrostRelayApplication {
     private StarcoinTransactionServiceFacade starcoinTransactionServiceFacade;
 
     @Autowired
-    private StarcoinEventService starcoinEventService;
+    private StarcoinHandleEventService starcoinHandleEventService;
 
 
     public static void main(String[] args) {
@@ -67,7 +67,7 @@ public class BifrostRelayApplication {
     void runEthereumWithdrawSubscribeHandler() {
         LOG.info("EXECUTING : EthereumWithdrawSubscribeHandler");
         Thread handlerThread = new Thread(new EthereumWithdrawSubscribeHandler(ethereumWebSocketServiceUrl,
-                ethereumWithdrawLogFilterAddress, ethereumLogService));
+                ethereumWithdrawLogFilterAddress, ethereumHandleLogService));
         handlerThread.start();
     }
 
@@ -76,7 +76,7 @@ public class BifrostRelayApplication {
         for (String seed : starcoinSeeds) {
             LOG.info("EXECUTING : StarcoinCrossChainDepositSubscribeHandler, seed: " + seed);
             Thread handlerThread = new Thread(new StarcoinCrossChainDepositSubscribeHandler(seed,
-                    starcoinEventService, starcoinEventFilterAddress,
+                    starcoinHandleEventService, starcoinEventFilterAddress,
                     starcoinCrossChainDepositEventTypeTag));
             handlerThread.start();
         }

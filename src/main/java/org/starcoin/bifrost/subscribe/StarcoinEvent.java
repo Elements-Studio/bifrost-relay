@@ -1,6 +1,5 @@
 package org.starcoin.bifrost.subscribe;
 
-import com.novi.serde.DeserializationError;
 import org.starcoin.bifrost.data.model.StcToEthereum;
 import org.starcoin.bifrost.data.utils.IdUtils;
 import org.starcoin.bifrost.utils.HexUtils;
@@ -47,14 +46,9 @@ public class StarcoinEvent {
      * "event_seq_number": "7"
      * }
      */
-    public static void copyProperties(StarcoinEvent src, StcToEthereum e) {
-        org.starcoin.bifrost.types.CrossChainDepositEvent decode_event_data;
-        try {
-            decode_event_data = org.starcoin.bifrost.types.CrossChainDepositEvent
-                    .bcsDeserialize(HexUtils.hexToByteArray(src.data));
-        } catch (DeserializationError deserializationError) {
-            throw new RuntimeException("Deserialize event data error.", deserializationError);
-        }
+    public static void copyProperties(StarcoinEvent src,
+                                      org.starcoin.bifrost.types.CrossChainDepositEvent srcDecodedEventData, StcToEthereum e) {
+
         e.setBlockHash(src.block_hash);
         e.setBlockNumber(new BigInteger(src.block_number));
         e.setTransactionHash(src.transaction_hash);
@@ -63,12 +57,12 @@ public class StarcoinEvent {
         e.setTypeTag(src.type_tag);
         e.setEventKey(src.event_key);
         e.setEventSequenceNumber(new BigInteger(src.event_seq_number));
-        e.setMintAccount(HexUtils.byteArrayToHexWithPrefix(decode_event_data.to.content()));
+        e.setMintAccount(HexUtils.byteArrayToHexWithPrefix(srcDecodedEventData.to.content()));
         //e.setMintAmount(...);// todo set mint(on ethereum) amount here???
-        e.setDepositAmount(decode_event_data.value);
+        e.setDepositAmount(srcDecodedEventData.value);
 //        src.decode_event_data.from;
 //        src.decode_event_data.owner;
-//        src.decode_event_data.to_chain; //todo filter 'to_chain'
+//        src.decode_event_data.to_chain;
 //        src.decode_event_data.token_code;
         e.setCreatedAt(System.currentTimeMillis());
         e.setCreatedBy("ADMIN");

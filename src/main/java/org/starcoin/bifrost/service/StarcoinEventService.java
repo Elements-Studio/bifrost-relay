@@ -30,8 +30,21 @@ public class StarcoinEventService {
     private TokenPriceService tokenPriceService;
 
     @Transactional
-    public void save(StcToEthereum stcToEthereum) {
-        starcoinEventRepository.save(stcToEthereum);
+    public boolean trySave(StcToEthereum stcToEthereum) {
+        boolean eventHandled;
+        StarcoinEvent starcoinEvent = starcoinEventRepository.findById(stcToEthereum.getEventId()).orElse(null);
+        if (starcoinEvent != null) {
+            eventHandled = true;
+        } else {
+            try {
+                starcoinEventRepository.save(stcToEthereum);
+                eventHandled = true;
+            } catch (RuntimeException e) {
+                LOG.error("Save StcToEthereum event error.", e);
+                eventHandled = false;
+            }
+        }
+        return eventHandled;
     }
 
     @Transactional

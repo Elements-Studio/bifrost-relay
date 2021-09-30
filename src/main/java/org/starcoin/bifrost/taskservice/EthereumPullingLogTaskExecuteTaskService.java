@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.starcoin.bifrost.data.model.EthereumPullingLogTask;
-import org.starcoin.bifrost.data.model.EthereumWithdrawStc;
 import org.starcoin.bifrost.data.repo.EthereumNodeHeartbeatRepository;
-import org.starcoin.bifrost.service.EthereumLogService;
+import org.starcoin.bifrost.service.EthereumHandleLogService;
 import org.starcoin.bifrost.service.EthereumNodeHeartbeatService;
 import org.starcoin.bifrost.service.EthereumPullingLogTaskService;
-import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler;
 import org.starcoin.bifrost.subscribe.EthereumWithdrawSubscriber;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -26,7 +24,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.starcoin.bifrost.subscribe.EthereumWithdrawSubscribeHandler.decodeLog;
 
 @Component
 public class EthereumPullingLogTaskExecuteTaskService {
@@ -39,7 +36,7 @@ public class EthereumPullingLogTaskExecuteTaskService {
     private Web3j web3j;
 
     @Autowired
-    private EthereumLogService ethereumLogService;
+    private EthereumHandleLogService ethereumHandleLogService;
 
     @Autowired
     private EthereumPullingLogTaskService ethereumPullingLogTaskService;
@@ -47,42 +44,42 @@ public class EthereumPullingLogTaskExecuteTaskService {
     @Autowired
     private EthereumNodeHeartbeatRepository ethereumNodeHeartbeatRepository;
 
-    private static EthereumWithdrawStc getEthereumWithdrawStc(Log log) {
-        return decodeLog(
-                new EthereumWithdrawSubscribeHandler.LogWrapper() {
-                    public String getAddress() {
-                        return log.getAddress();
-                    }
+    private static EthereumHandleLogService.LogWrapper getLogWrapper(Log log) {
+        return new EthereumHandleLogService.LogWrapper() {
+            public String getAddress() {
+                return log.getAddress();
+            }
 
-                    public String getBlockHash() {
-                        return log.getBlockHash();
-                    }
+            public String getBlockHash() {
+                return log.getBlockHash();
+            }
 
-                    public String getTransactionHash() {
-                        return log.getTransactionHash();
-                    }
+            public String getTransactionHash() {
+                return log.getTransactionHash();
+            }
 
-                    public BigInteger getTransactionIndex() {
-                        return log.getTransactionIndex();
-                    }
+            public BigInteger getTransactionIndex() {
+                return log.getTransactionIndex();
+            }
 
-                    public BigInteger getLogIndex() {
-                        return log.getLogIndex();
-                    }
+            public BigInteger getLogIndex() {
+                return log.getLogIndex();
+            }
 
-                    public String getData() {
-                        return log.getData();
-                    }
+            public String getData() {
+                return log.getData();
+            }
 
-                    public List<String> getTopics() {
-                        return log.getTopics();
-                    }
+            public List<String> getTopics() {
+                return log.getTopics();
+            }
 
-                    public BigInteger getBlockNumber() {
-                        return log.getBlockNumber();
-                    }
-                }
-        );
+            public BigInteger getBlockNumber() {
+                return log.getBlockNumber();
+            }
+
+
+        };
     }
 
     @Scheduled(fixedDelayString = "${ethereum.pulling-log-task-execute-task-service.fixed-delay}")
@@ -115,11 +112,10 @@ public class EthereumPullingLogTaskExecuteTaskService {
         EthereumNodeHeartbeatService nodeHeartbeatService = new EthereumNodeHeartbeatService(ethereumNodeHeartbeatRepository);
         nodeHeartbeatService.beat(t.getFromBlockNumber());
         for (Log log : logs) {
-            EthereumWithdrawStc withdrawStc = getEthereumWithdrawStc(log);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Withdraw STC on ethereum chain: " + withdrawStc);
+                LOG.debug("Get log on ethereum chain: " + log);
             }
-            ethereumLogService.trySave(withdrawStc);
+            ethereumHandleLogService.handle(getLogWrapper(log));
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("End of pulling and saved.");

@@ -15,8 +15,6 @@ public class EthereumLogService {
     @Autowired
     private EthereumLogRepository ethereumLogRepository;
 
-    @Autowired
-    private EthereumNodeHeartbeatService ethereumNodeHeartbeatService;
 
     public boolean trySave(EthereumWithdrawStc withdrawStc) {
         boolean eventHandled;
@@ -31,16 +29,6 @@ public class EthereumLogService {
                 LOG.error("Save ethereum withdraw STC log error.", e);
                 eventHandled = false;
             }
-        }
-
-        try {
-            if (eventHandled) {
-                ethereumNodeHeartbeatService.beat(withdrawStc.getBlockNumber());
-            } else {
-                ethereumNodeHeartbeatService.reset();
-            }
-        } catch (RuntimeException runtimeException) {
-            LOG.error("Save heartbeat in database error.", runtimeException);
         }
         return eventHandled;
     }

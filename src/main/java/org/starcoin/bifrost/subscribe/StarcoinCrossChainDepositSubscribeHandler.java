@@ -3,8 +3,7 @@ package org.starcoin.bifrost.subscribe;
 import io.reactivex.Flowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.starcoin.bifrost.data.model.StcToEthereum;
-import org.starcoin.bifrost.service.StarcoinEventService;
+import org.starcoin.bifrost.service.StarcoinHandleEventService;
 import org.web3j.protocol.websocket.WebSocketService;
 
 import java.net.ConnectException;
@@ -17,21 +16,22 @@ public class StarcoinCrossChainDepositSubscribeHandler implements Runnable {
 
     //private String network;
 
-    private final StarcoinEventService starcoinEventService;
+    private final StarcoinHandleEventService starcoinHandleEventService;
 
     private final String fromAddress;
 
     private final String crossChainDepositEventTypeTag;
 
     public StarcoinCrossChainDepositSubscribeHandler(String seed,
-                                                     StarcoinEventService starcoinEventService,
+                                                     StarcoinHandleEventService starcoinHandleEventService,
                                                      String fromAddress, String crossChainDepositEventTypeTag) {
         this.webSocketSeed = seed;
         //this.network = network;
-        this.starcoinEventService = starcoinEventService;
+        this.starcoinHandleEventService = starcoinHandleEventService;
         this.fromAddress = fromAddress;
         this.crossChainDepositEventTypeTag = crossChainDepositEventTypeTag;
     }
+
 
     private String getWebSocketSeed() {
         String wsUrl = webSocketSeed;
@@ -59,11 +59,8 @@ public class StarcoinCrossChainDepositSubscribeHandler implements Runnable {
                     continue;
                 }
                 StarcoinEvent event = notification.getParams().getResult();
-                LOG.debug("Received event: " + event);
-                //todo filter event by event.type_tag and to_chain
-                StcToEthereum stcToEthereum = new StcToEthereum();
-                StarcoinEvent.copyProperties(event, stcToEthereum);
-                starcoinEventService.save(stcToEthereum);
+                if (LOG.isDebugEnabled()) LOG.debug("Received event: " + event);
+                starcoinHandleEventService.handle(event);
             }
         } catch (ConnectException e) {
             LOG.info("handle subscribe exception", e);
