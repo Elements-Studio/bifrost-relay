@@ -13,7 +13,7 @@ import org.starcoin.bifrost.data.model.StcToEthereum;
 import org.starcoin.bifrost.data.repo.*;
 import org.starcoin.bifrost.data.utils.IdUtils;
 import org.starcoin.bifrost.service.*;
-import org.starcoin.bifrost.utils.StarcoinOnChainUtils;
+import org.starcoin.utils.StarcoinOnChainUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;

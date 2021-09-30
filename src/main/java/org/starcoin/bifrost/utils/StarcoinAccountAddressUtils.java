@@ -3,6 +3,7 @@ package org.starcoin.bifrost.utils;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 import org.starcoin.types.Ed25519PrivateKey;
 import org.starcoin.types.Ed25519PublicKey;
+import org.starcoin.utils.HexUtils;
 import org.starcoin.utils.SignatureUtils;
 
 import java.util.Arrays;

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.starcoin.bifrost.data.model.StcToEthereum;
 import org.starcoin.bifrost.subscribe.StarcoinEvent;
-import org.starcoin.bifrost.utils.HexUtils;
+import org.starcoin.utils.HexUtils;
 
 @Service
 public class StarcoinHandleEventService {

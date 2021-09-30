@@ -10,7 +10,7 @@ import org.starcoin.bifrost.data.model.*;
 import org.starcoin.bifrost.data.repo.DroppedStarcoinTransactionRepository;
 import org.starcoin.bifrost.data.repo.StarcoinTransactionRepository;
 import org.starcoin.bifrost.data.repo.UnexpectedStarcoinTransactionRepository;
-import org.starcoin.bifrost.utils.StarcoinOnChainUtils;
+import org.starcoin.utils.StarcoinOnChainUtils;
 
 import javax.transaction.Transactional;
 import java.math.BigInteger;

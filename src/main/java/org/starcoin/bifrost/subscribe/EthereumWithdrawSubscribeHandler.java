@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.util.List;
 
-import static org.starcoin.bifrost.utils.HexUtils.hexToBigInteger;
+import static org.starcoin.utils.HexUtils.hexToBigInteger;
 
 public class EthereumWithdrawSubscribeHandler implements Runnable {
 

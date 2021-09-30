@@ -1,4 +1,4 @@
-package org.starcoin.bifrost.rpc;
+package org.starcoin.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

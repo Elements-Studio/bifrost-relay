@@ -1,6 +1,7 @@
 package org.starcoin.bifrost.utils;
 
 import org.bouncycastle.jcajce.provider.digest.SHA3;
+import org.starcoin.utils.HexUtils;
 
 public class Sha3HashUtils {
 

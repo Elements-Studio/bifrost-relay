@@ -2,19 +2,25 @@ package org.starcoin.bifrost;
 
 import com.novi.serde.DeserializationError;
 import org.starcoin.bifrost.types.CrossChainDepositEvent;
-import org.starcoin.bifrost.utils.HexUtils;
+import org.starcoin.jsonrpc.client.JSONRPC2Session;
+import org.starcoin.utils.HexUtils;
+import org.starcoin.utils.StarcoinOnChainUtils;
+
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MiscTests {
 
     public static void main(String[] args) {
-//        try {
-//            JSONRPC2Session jsonrpc2Session = new JSONRPC2Session(new URL("https://barnard-seed.starcoin.org"));
-//            BigInteger stcBalance = StarcoinOnChainUtils.getAccountStcBalance(jsonrpc2Session, "0x0000000000000000000000000a550c18");
-//            System.out.println(stcBalance);
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        if (true) return;
+        try {
+            JSONRPC2Session jsonrpc2Session = new JSONRPC2Session(new URL("https://barnard-seed.starcoin.org"));
+            BigInteger stcBalance = StarcoinOnChainUtils.getAccountStcBalance(jsonrpc2Session, "0x0000000000000000000000000a550c18");
+            System.out.println(stcBalance);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        if (true) return;
 
         String eventData = "0x000000000000000000000000000000010353544303535443ccf1adedf0ba6f9bdb9a6905173a5d721471dfdd2bf49e8af5226e0078efa31ecf258bc44eccf1adedf0ba6f9bdb9a6905173a5d7200ca9a3b00000000000000000000000001";
         CrossChainDepositEvent decode_event_data;

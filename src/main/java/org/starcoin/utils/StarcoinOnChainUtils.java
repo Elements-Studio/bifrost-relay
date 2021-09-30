@@ -1,4 +1,4 @@
-package org.starcoin.bifrost.utils;
+package org.starcoin.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.starcoin.bifrost.rpc.JsonRpcClient;
 import org.starcoin.jsonrpc.client.JSONRPC2Session;
 import org.starcoin.jsonrpc.client.JSONRPC2SessionException;
 import org.starcoin.types.AccountAddress;

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.starcoin.bifrost.data.model.StarcoinEvent;
 import org.starcoin.bifrost.data.model.StcToEthereum;
 import org.starcoin.bifrost.data.repo.StarcoinEventRepository;
-import org.starcoin.bifrost.rpc.JsonRpcClient;
+import org.starcoin.utils.JsonRpcClient;
 import org.starcoin.bifrost.service.EthereumTransactionOnChainService;
 import org.starcoin.bifrost.service.EthereumTransactionServiceFacade;
 import org.starcoin.bifrost.service.StarcoinEventService;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.starcoin.bifrost.utils.StarcoinOnChainUtils.getLatestBlockNumber;
+import static org.starcoin.utils.StarcoinOnChainUtils.getLatestBlockNumber;
 
 @Component
 public class StarcoinEventConfirmTaskService {

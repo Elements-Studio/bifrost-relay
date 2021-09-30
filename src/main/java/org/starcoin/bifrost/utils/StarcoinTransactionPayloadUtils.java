@@ -6,6 +6,7 @@ import com.novi.serde.Int128;
 import com.novi.serde.SerializationError;
 import com.novi.serde.Unsigned;
 import org.starcoin.types.*;
+import org.starcoin.utils.HexUtils;
 
 import java.math.BigInteger;
 
