@@ -26,7 +26,7 @@ public abstract class AbstractPullingBlockTaskService<T extends AbstractPullingB
 
 
     @Transactional
-    public void createOrUpdatePullingEventTask(T originPullingTask) {
+    public void createOrUpdatePullingTask(T originPullingTask) {
         if (originPullingTask.getFromBlockNumber() == null) {
             throw new IllegalArgumentException("Argument 'fromBlockNumber' is null");
         }

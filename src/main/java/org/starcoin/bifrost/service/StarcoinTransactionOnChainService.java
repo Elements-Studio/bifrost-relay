@@ -11,14 +11,10 @@ import org.springframework.stereotype.Service;
 import org.starcoin.bean.TypeObj;
 import org.starcoin.bifrost.DomainError;
 import org.starcoin.bifrost.data.model.StarcoinDepositStc;
-import org.starcoin.utils.JsonRpcClient;
-import org.starcoin.utils.HexUtils;
 import org.starcoin.bifrost.utils.StarcoinAccountAddressUtils;
-import org.starcoin.utils.StarcoinOnChainUtils;
 import org.starcoin.jsonrpc.client.JSONRPC2Session;
 import org.starcoin.types.*;
-import org.starcoin.utils.AccountAddressUtils;
-import org.starcoin.utils.SignatureUtils;
+import org.starcoin.utils.*;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -30,8 +26,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import static org.starcoin.bifrost.utils.Sha3HashUtils.hashStarcoinSignedUserTransaction;
-import static org.starcoin.utils.StarcoinOnChainUtils.submitHexTransaction;
 import static org.starcoin.bifrost.utils.StarcoinTransactionPayloadUtils.encode_withdraw_from_ethereum_chain_script_function;
+import static org.starcoin.utils.StarcoinOnChainUtils.submitHexTransaction;
 
 @Service
 public class StarcoinTransactionOnChainService {

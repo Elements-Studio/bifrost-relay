@@ -26,28 +26,10 @@ public class StarcoinHandleEventService {
     private StarcoinNodeHeartbeatService starcoinNodeHeartbeatService;
 
     public void handle(StarcoinEvent event) {
-        boolean eventHandled;
-        try {
+        AbstractNodeHeartbeatService.runAndBeat(() -> {
             StcToEthereum stcToEthereum = decodeEvent(event);
             starcoinEventService.save(stcToEthereum);
-            eventHandled = true;
-        } catch (org.springframework.dao.DataIntegrityViolationException
-                | org.springframework.orm.ObjectOptimisticLockingFailureException e) {
-            LOG.info("Handle event encountered known exception.", e);
-            eventHandled = true;
-        } catch (RuntimeException runtimeException) {
-            LOG.error("Handle event error, event: " + event, runtimeException);
-            eventHandled = false;
-        }
-        try {
-            if (eventHandled) {
-                starcoinNodeHeartbeatService.beat(new BigInteger(event.block_number));
-            } else {
-                starcoinNodeHeartbeatService.reset();
-            }
-        } catch (RuntimeException runtimeException) {
-            LOG.error("Save heartbeat in database error.", runtimeException);
-        }
+        }, this.starcoinNodeHeartbeatService, new BigInteger(event.block_number));
     }
 
     private StcToEthereum decodeEvent(StarcoinEvent event) {

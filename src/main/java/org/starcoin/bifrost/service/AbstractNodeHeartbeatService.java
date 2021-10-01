@@ -1,5 +1,7 @@
 package org.starcoin.bifrost.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.starcoin.bifrost.data.model.AbstractNodeHeartbeat;
 import org.starcoin.bifrost.data.model.NodeHeartbeatId;
 import org.starcoin.bifrost.data.model.Pair;
@@ -14,10 +16,35 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class AbstractNodeHeartbeatService<T extends AbstractNodeHeartbeat> {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractNodeHeartbeatService.class);
 
     private final String nodeId = "0x" + UUID.randomUUID().toString().replace("-", "");
 
     private final AtomicReference<BigInteger> startedAt = new AtomicReference<>();
+
+    public static void runAndBeat(Runnable runnable, AbstractNodeHeartbeatService heartbeatService, BigInteger beatenAt) {
+        boolean eventHandled;
+        try {
+            runnable.run();
+            eventHandled = true;
+        } catch (org.springframework.dao.DataIntegrityViolationException
+                | org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+            LOG.info("Run encountered known exception.", e);
+            eventHandled = true;
+        } catch (RuntimeException runtimeException) {
+            LOG.error("Run error.", runtimeException);
+            eventHandled = false;
+        }
+        try {
+            if (eventHandled) {
+                heartbeatService.beat(beatenAt);
+            } else {
+                heartbeatService.reset();
+            }
+        } catch (RuntimeException runtimeException) {
+            LOG.error("Save heartbeat in database error.", runtimeException);
+        }
+    }
 
     protected abstract Function<NodeHeartbeatId, T> findByIdOrElseNullFunction();
 
@@ -74,5 +101,4 @@ public abstract class AbstractNodeHeartbeatService<T extends AbstractNodeHeartbe
         }
         return intervals;
     }
-
 }
