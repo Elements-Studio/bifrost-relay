@@ -28,6 +28,10 @@ public class StarcoinAccountAddressUtils {
 
     public static String getAddressFromPrivateKey(Ed25519PrivateKey privateKey) {
         Ed25519PublicKey publicKey = SignatureUtils.getPublicKey(privateKey);
+        return getAddressFromPublicKey(publicKey);
+    }
+
+    public static String getAddressFromPublicKey(Ed25519PublicKey publicKey) {
         byte[] rawBytes = com.google.common.primitives.Bytes.concat(publicKey.value.content(), new byte[]{SCHEME_ID_ED25519});
         byte[] digestedBytes = new SHA3.Digest256().digest(rawBytes);
         byte[] addressBytes = Arrays.copyOfRange(digestedBytes, digestedBytes.length - ACCOUNT_ADDRESS_LENGTH, digestedBytes.length);
