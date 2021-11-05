@@ -68,9 +68,9 @@ public class StarcoinEventConfirmTaskService {
             }
             StcToEthereum stcToEthereum = (StcToEthereum) e;
             try {
-                if (!isTransactionStillThere(stcToEthereum.getTransactionHash(),
+                if (!isTransactionExecuted(stcToEthereum.getTransactionHash(),
                         stcToEthereum.getBlockHash(), stcToEthereum.getBlockNumber())) {
-                    LOG.error("Get transaction info error. " + e);
+                    LOG.error("Check transaction status failed. " + e);
                     continue;
                 }
             } catch (RuntimeException runtimeException) {
@@ -106,13 +106,14 @@ public class StarcoinEventConfirmTaskService {
     }
 
 
-    private boolean isTransactionStillThere(String transactionHash, String blockHash, BigInteger blockNumber) {
+    private boolean isTransactionExecuted(String transactionHash, String blockHash, BigInteger blockNumber) {
         String method = "chain.get_transaction_info";
         Map<String, Object> resultMap = new JsonRpcClient(jsonRpcSession).sendJsonRpc(method,
                 Arrays.asList(transactionHash), new TypeReference<Map<String, Object>>() {
                 });
         return blockHash.equals(resultMap.get("block_hash")) &&
-                blockNumber.compareTo(new BigInteger(resultMap.get("block_number").toString())) == 0;
+                blockNumber.compareTo(new BigInteger(resultMap.get("block_number").toString())) == 0 &&
+                "Executed".equalsIgnoreCase(String.valueOf(resultMap.get("status")));
     }
 
 

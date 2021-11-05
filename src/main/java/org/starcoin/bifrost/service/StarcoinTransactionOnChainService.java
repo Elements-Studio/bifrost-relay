@@ -147,12 +147,14 @@ public class StarcoinTransactionOnChainService {
         BigInteger gasLimit = DEPOSIT_STC_GAS_LIMIT;
         TransactionPayload payload = createTransactionPayload(depositAccount, depositAmount, fromAccount, fromChain.intValue());
 
-        RawUserTransaction rawUserTransaction = createRawUserTransaction(AccountAddressUtils.create(senderAddress),
-                accountSeqNumber, payload, gasPrice, gasLimit, expirationTimestampSecs);
         // ///////////////////////////////////////
         Ed25519PrivateKey ed25519PrivateKey = SignatureUtils.strToPrivateKey(senderPrivateKey);
         // check private key and sender address...
         assertPrivateKeyMatchesSenderAddress(ed25519PrivateKey);
+
+        RawUserTransaction rawUserTransaction = createRawUserTransaction(AccountAddressUtils.create(senderAddress),
+                accountSeqNumber, payload, gasPrice, gasLimit, expirationTimestampSecs);
+
         SignedUserTransaction signedUserTransaction = SignatureUtils.signTxn(ed25519PrivateKey,
                 rawUserTransaction);
         byte[] signedMessage = signedUserTransaction.bcsSerialize();
