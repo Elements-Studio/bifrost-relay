@@ -63,19 +63,21 @@ public class PolyDevNetworkInteractApp {
 //                    .expect("\"ok\":", 10)
 //                    //.sendLine("dev get-coin 0xff2794187d72cc3a9240198ca98ac7b6")
 //                    //.expect("\"ok\":", 10)
-                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/Address.mv -b")
-                    .expect("\"ok\":", 10)
-                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainType.mv -b")
-                    .expect("\"ok\":", 10)
-                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainUtils.mv -b")
-                    .expect("\"ok\":", 10)
-                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainGlobal.mv -b")
-                    .expect("\"ok\":", 10)
-//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainData.mv -b")
+//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/Address.mv -b")
 //                    .expect("\"ok\":", 10)
-//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainManager.mv -b")
+//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainType.mv -b")
 //                    .expect("\"ok\":", 10)
-
+//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainUtils.mv -b")
+//                    .expect("\"ok\":", 10)
+//                    .sendLine("dev deploy storage/0x569AB535990a17Ac9Afd1bc57Faec683/modules/CrosschainGlobal.mv -b")
+//                    .expect("\"ok\":", 10)
+                    // ------------------------------------
+                    // 使用 package 的方式部署
+                    .sendLine("dev package -o ./build -n packaged ./storage/0x2d81a0427d64ff61b11ede9085efa5ad/")
+                    .expect("\"ok\":", 10)
+                    .sendLine("dev deploy ./build/packaged.blob -b")
+                    .expect("\"ok\":", 10)
+                    // ------------------------------------
             ;
 
         }
