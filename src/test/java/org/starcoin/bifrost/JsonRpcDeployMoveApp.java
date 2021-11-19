@@ -87,52 +87,65 @@ public class JsonRpcDeployMoveApp {
             throw new RuntimeException("Private key is null!");
         }
 
-        // -------------------------------------------------------
-        // starcoin% dev package -o ./build -n packaged ./storage/0x2d81a0427d64ff61b11ede9085efa5ad/
-        String packageFilePath = "~/Documents/Elements-Studio/poly-stc-contracts/build/packaged.blob";
-        String rspBody = starcoinClient.deployContractPackage(
-                AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
-                SignatureUtils.strToPrivateKey(privateKey),
-                packageFilePath, null);
-        System.out.println("------------------ deploy blob package ------------------");
-        System.out.println(rspBody);
-        try {
-            Thread.sleep(1000 * 20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
+        boolean doDeploy = true;
+        boolean doInit = true;
+        boolean doLock = true;
+
+        if (doDeploy) {
+            // -------------------------------------------------------
+            // starcoin% dev package -o ./build -n packaged ./storage/0x2d81a0427d64ff61b11ede9085efa5ad/
+            String packageFilePath = "~/Documents/Elements-Studio/poly-stc-contracts/build/packaged.blob";
+            String userHomeDir = System.getenv("USER_HOME");
+            if (userHomeDir != null && !userHomeDir.isEmpty() && packageFilePath.startsWith("~")) {
+                packageFilePath = packageFilePath.replace("~", userHomeDir);
+            }
+            String rspBody = starcoinClient.deployContractPackage(
+                    AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
+                    SignatureUtils.strToPrivateKey(privateKey),
+                    packageFilePath, null);
+            System.out.println("------------------ deploy blob package ------------------");
+            System.out.println(rspBody);
+            try {
+                Thread.sleep(1000 * 60);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
         }
 
-        // -------------------------------------------------------
-        TransactionPayload initPayload = encode_init_genesis_script_function();
-        RawUserTransaction rawUserTransaction = buildRawUserTransaction(chainInfo.getChainId(),
-                AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
-                starcoinClient.getAccountSequenceNumber(AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad")),
-                System.currentTimeMillis() / 1000 + DEFAULT_TRANSACTION_EXPIRATION_SECONDS,
-                initPayload);
-        String initTxHash = starcoinClient.submitHexTransaction(
-                //AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
-                SignatureUtils.strToPrivateKey(privateKey),
-                rawUserTransaction);
-        System.out.println("------------------ init genesis ------------------");
-        System.out.println(initTxHash);
+        if (doInit) {
+            // -------------------------------------------------------
+            TransactionPayload initPayload = encode_init_genesis_script_function();
+            RawUserTransaction rawUserTransaction = buildRawUserTransaction(chainInfo.getChainId(),
+                    AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
+                    starcoinClient.getAccountSequenceNumber(AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad")),
+                    System.currentTimeMillis() / 1000 + DEFAULT_TRANSACTION_EXPIRATION_SECONDS,
+                    initPayload);
+            String initTxHash = starcoinClient.submitHexTransaction(
+                    //AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
+                    SignatureUtils.strToPrivateKey(privateKey),
+                    rawUserTransaction);
+            System.out.println("------------------ init genesis ------------------");
+            System.out.println(initTxHash);
 
-        try {
-            Thread.sleep(1000 * 20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
+            try {
+                Thread.sleep(1000 * 60);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
         }
 
-        // -------------------------------------------------------
-        TransactionPayload lockPayload = encode_cross_chain_lock_script_function();
-        String lockTxHash = starcoinClient.submitTransaction(
-                AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
-                SignatureUtils.strToPrivateKey(privateKey),
-                lockPayload);
-        System.out.println("------------------ lock asset ------------------");
-        System.out.println(lockTxHash);
-
+        if (doLock) {
+            // -------------------------------------------------------
+            TransactionPayload lockPayload = encode_cross_chain_lock_script_function();
+            String lockTxHash = starcoinClient.submitTransaction(
+                    AccountAddressUtils.create("0x2d81a0427d64Ff61b11eDe9085EFA5ad"),
+                    SignatureUtils.strToPrivateKey(privateKey),
+                    lockPayload);
+            System.out.println("------------------ lock asset ------------------");
+            System.out.println(lockTxHash);
+        }
     }
 
     public static TransactionPayload encode_cross_chain_lock_script_function() {
